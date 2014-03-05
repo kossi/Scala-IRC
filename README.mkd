@@ -2,68 +2,7 @@
 
 Upgraded to use the Akka 2.3 and the new Akka IO functionality. Some terrible changes but tried not to brake everything.
 
-The original version: [Scala-IRC](https://github.com/aconbere/Scala-IRC).
+The original version and a readme are here: [Scala-IRC](https://github.com/aconbere/Scala-IRC).
 
 Scala irc is a small irc framework focused on a simple interface for receiving and responding to messages and composable interfaces.
 
-## Installation
-
-```scala
-libraryDependencies += "org.conbere" %% "irc" % "0.4.0"
-```
-
-## Usage: Bots
-
-The easiest way to get started is to extend the `ClassicBot` trait
-
-``` scala
-import org.conbere.irc._
-
-class MyBot( val serverName:String
-           , val nickName:String
-           , val userName:String
-           , val password:String
-           , val realName:String
-           , val rooms:List[Room])
-extends ClassicBot {
-```
-
-For ease of use we'll grab `Messages` from the irc package. These form the foundational datatypes for using irc. `Messages` provides common extractors for all of the irc commands (PONG, PRIVMSG, JOIN, etc.) as well as providing an easy helper to produce a Message object for pushing back to the server. `Tokens` 
-  
-```scala
-  import Messages._
-
-  val toMePattern = ("^(" + nickName + "[:| ].*)").r
-```
-
-Bots are simply an actor that recieves messages from the Client, defining the actor's receive method is sufficient to begin. There are two helper methods `onConnect` and `defaultHandler` which make sure that user authentication is set up and pings are handled. You'll notice that recieve's are `PartialFunctions` a feature that we use to chain behavior. To respond you can send a message back to the sender `sender ! PrivMsg(from, msg)`.
-
-And finally we match against PrivMsg's comming in looking for some simple patterns, and respond with new PrivMsgs.
-
-```scala
-  def receive = onConnect orElse defaultResponse orElse {
-    case PrivMsg(from, `nickName`, _) =>
-      sender ! PrivMsg(from, "Hi " + from + " this is a private message")
-    case PrivMsg(from, channel, toMePattern(_match)) =>
-      sender ! PrivMsg(from, "Hi " + from + " this is a channel message directed at me")
-  }
-}
-```
-
-The last task is to produce an runable executable. To run your bot the Client object defines a start method which given a server and port will host your bot in an Actor.
-
-```scala
-object Main {
-  def main(args:Array[String]) = {
-    val system = ActorSystem("irc")
-
-    val server = "irc.ny4dev.etsy.com"
-    val port = 6667
-
-    val rooms = List(Room("#testroom", None))
-
-    val bot = system.actorOf(Prop(classOf[MyBot], server, "bot", "bot", "pass", "Bot", rooms))
-    val client = system.actorOf(Prop(classOf[Client], server, port, bot))
-  }
-}
-```
