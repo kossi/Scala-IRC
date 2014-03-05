@@ -29,7 +29,7 @@ libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
 , "junit" % "junit" % "4.10" % "test"
 , "com.typesafe.akka" %% "akka-actor" % "2.3.0"
-, "com.typesafe.akka" %% "akka-contrib" % "2.3.0-RC4"
+, "com.typesafe.akka" %% "akka-contrib" % "2.3.0"
 , "org.apache.logging.log4j" % "log4j-core" % "2.0-beta9"
 , "com.typesafe" %% "scalalogging-log4j" % "1.0.1"
 , "com.typesafe" % "config" % "1.0.0"
