@@ -3,70 +3,105 @@ package org.conbere.irc
 import java.net.InetSocketAddress
 import com.typesafe.scalalogging.log4j.Logging
 
+import scala.concurrent.duration._
+
 import akka.actor._
-import akka.util.{ ByteString, ByteStringBuilder }
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.language.postfixOps
+import scala.util.Random
 
-import Tokens._
-import ControlChars._
-import Messages._
 
-case object Connected
+import akka.io.{Tcp, IO}
+import akka.contrib.throttle.TimerBasedThrottler
+import akka.contrib.throttle.Throttler._
 
-class Client(serverName:String, port:Int, responder:ActorRef) extends Actor with Logging {
-  val state = IO.IterateeRef.Map.async[IO.Handle]()(context.dispatcher)
-  val address = new InetSocketAddress(serverName, port)
+sealed trait IrcEvent
+case object Connected extends IrcEvent
+case class Connect(port: Int) extends IrcEvent
+case object Reconnect extends IrcEvent
+case object Stop extends IrcEvent
+case object Stopped extends IrcEvent
 
-  var handle:Option[IO.SocketHandle] = None
+object Client {
+  val defaultThrottlerProps =  Props(classOf[TimerBasedThrottler], 4 msgsPer 1.second)
 
-  def utf8(bytes:ByteString) =
-    bytes.decodeString("UTF-8").trim
+  def props(serverName: String, port: Int, responder: ActorRef) =
+    Props(classOf[Client], serverName, List(port), responder, defaultThrottlerProps, "UTF-8", 5)
+  def props(serverName: String, ports: List[Int], responder: ActorRef) =
+    Props(classOf[Client], serverName, ports, responder, defaultThrottlerProps, "UTF-8", 5)
+  def props(serverName: String, ports: List[Int], responder: ActorRef, throttlerProps: Props) =
+    Props(classOf[Client], serverName, ports, responder, defaultThrottlerProps, "UTF-8", 5)
+  def props(serverName: String, ports: List[Int], responder: ActorRef, throttlerProps: Props, charset: String,
+             maxTries: Int) = Props(classOf[Client], serverName, ports, responder, throttlerProps, charset, maxTries)
+}
 
-  override def preStart {
-    println("Connecting to: " + address)
-    IOManager(context.system).connect(address)
+class Client(serverName:String, ports:List[Int], responder:ActorRef, throttlerProps: Props,
+              charset: String, maxTries: Int) extends Actor with Logging {
+  var retry = 1
+  var handler: ActorRef = _
+
+  import context.system
+
+  override def preStart() {
+    self ! Connect(ports.head)
   }
-
-  def parseMessage(str:String) =
-    Parser.apply(str) match {
-      case Parser.Success(message, _) =>
-        println("Received: " + message)
-        Some(message)
-      case _ =>
-        logger.error("Could not parse: " + str)
-        None
-    }
 
   def receive = {
-    case IO.Connected(socket, address) =>
-      handle = Some(socket)
-
-      responder ! Connected
-
-      state(socket).flatMap(_ =>
-        IO.repeat {
-          IO.takeUntil(CRLF).map { in =>
-            for ( message <- parseMessage(utf8(in))) {
-              responder ! message
-            }
+    case Connect(port) =>
+      val address = new InetSocketAddress(serverName, port)
+      logger.info(s"Connecting to: $address")
+      IO(Tcp) ! Tcp.Connect(address)
+    case Tcp.CommandFailed(c: Tcp.Connect) =>
+      logger.warn("Command failed")
+      self ! Reconnect
+    case c @ Tcp.Connected(remote, local) =>
+      val connection = sender()
+      handler = context.actorOf(Handler.props(remote, connection, responder, throttlerProps, charset))
+      connection ! Tcp.Register(handler)
+      context watch handler
+      logger.info(s"Connected remote: $remote local port: ${local.getPort}")
+      retry = 1
+      context.become({
+        case Tcp.CommandFailed(c: Tcp.Connect) =>
+          logger.warn("Command failed")
+          self ! Reconnect
+        case Reconnect =>
+          context.children.foreach{c =>
+            context.unwatch(c)
+            context.stop(c)
           }
+          context.unbecome()
+          self ! Reconnect
+        case Stop =>
+          if(context.children.size == 0) sender() ! Stopped
+          handler forward Stop
+        case response: Response =>
+          handler forward response
+        case Stopped =>
+          sender() ! Stopped
+        case _ =>
+
+      },discardOld = false)
+    case Reconnect =>
+      if(retry < maxTries){
+        logger.info(s"retrying vol...$retry")
+        context.system.scheduler.scheduleOnce(30 seconds){
+          retry += 1
+          self ! Connect(Random.shuffle(ports).head)
         }
-      )
-
-    case IO.Read(socket, bytes) =>
-      state(socket)(IO.Chunk(bytes))
-
-    case IO.Closed(socket, cause) =>
-      state(socket)(IO.EOF)
-      state -= socket
-      handle = None
-
-    case response:Response =>
-      handle.foreach { socket =>
-        socket.write(
-          (new ByteStringBuilder ++= response.byteString ++= CRLF).result
-        )
       }
+      else{
+        throw new RuntimeException("Could not connect and max tries exceeded. " +
+          "Throwing an exception and restarting...")
+      }
+    case Stop =>
+      sender () ! Stopped
+    case _ =>
   }
+
+  override def postStop(){
+    context.children.foreach(context.stop)
+  }
+
 }

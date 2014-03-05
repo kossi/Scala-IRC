@@ -1,13 +1,15 @@
 package org.conbere.irc
 
-import Tokens.Message
 import Messages._
 import akka.actor._
 
 import scala.concurrent.duration._
-import com.typesafe.scalalogging.log4j.Logging
 import scala.language.postfixOps
+
+import com.typesafe.scalalogging.log4j.Logging
 import akka.actor.ActorSystem
+import akka.pattern.ask
+import akka.util.Timeout
 
 class ExampleBot(
   val serverName:String,
@@ -17,41 +19,51 @@ class ExampleBot(
   val realName:String,
   val rooms:List[Room]
 ) extends ClassicBot with Logging {
-  import Implicits._
+
+  nick = nickName
 
   def before:Receive = {
     case PrivMsg(from, `nickName`, text) =>
-      sender ! PrivMsg(from, text)
+        sender ! PrivMsg(from, text)
   }
 
-  def after:Receive = {
-    case Ping(from) =>
-      sender ! PrivMsg(from, "hey")
+  def invite:Receive = {
+    case Invite(from, room) =>
+      sender ! Join(List(Room(room, None)))
   }
 
-  def receive = onConnect orElse
-                defaultHandler orElse
-                before orElse after
+  def receive = onConnect orElse altDefaultHandler orElse
+                before orElse invite
 }
 
-object Main extends Logging {
+object Main extends App with Logging {
 
-  def main(args:Array[String]) = {
-    val rooms = List(Room("#testroom", None))
+  val rooms = List(Room("#blaa", None, autoJoin = true))
 
-    val serverName = "irc.server.com"
-    val port = 6667
+  val serverName = "irc.quakenet.org"
+  val ports: List[Int] = 6667 :: (6660 until 6666).toList
 
-    val system = ActorSystem("Irc")
+  val system = ActorSystem("Irc")
 
-    val botProps =
-      Props(classOf[ExampleBot], serverName, "testbot", "testbot", "password", "Test Bot", rooms)
+  val botProps =
+    Props(classOf[ExampleBot], serverName, "testing", "testing testing", "", "Test Bot", rooms)
 
-    val bot = system.actorOf(botProps)
+  val bot = system.actorOf(botProps)
 
-    val clientProps =
-      Props(classOf[Client], serverName, port, bot)
+  val client = system.actorOf(Client.props(serverName, ports, bot), name = "client")
 
-    val client = system.actorOf(clientProps)
-  }
+  import system.dispatcher
+  implicit val timeout = Timeout(30 seconds)
+  def exit(): Unit =
+    client ? Stop onComplete{
+      case _ =>
+        system.shutdown()
+        system.awaitTermination(5 seconds)
+        sys.exit()
+    }
+
+  sys.addShutdownHook(exit())
+
+  readLine(s"Exit: press enter ...${System.getProperty("line.separator")}")
+  exit()
 }

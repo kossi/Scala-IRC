@@ -1,5 +1,9 @@
 # Scala IRC
 
+Upgraded to use the Akka 2.3 and the new Akka IO functionality. Some terrible changes but tried not to brake everything.
+
+The original version: [Scala-IRC](https://github.com/aconbere/Scala-IRC).
+
 Scala irc is a small irc framework focused on a simple interface for receiving and responding to messages and composable interfaces.
 
 ## Installation
