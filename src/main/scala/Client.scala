@@ -26,18 +26,20 @@ case object Stopped extends IrcEvent
 object Client {
   val defaultThrottlerProps =  Props(classOf[TimerBasedThrottler], 4 msgsPer 1.second)
 
+
   def props(serverName: String, port: Int, responder: ActorRef) =
-    Props(classOf[Client], serverName, List(port), responder, defaultThrottlerProps, "UTF-8", 5)
+    Props(classOf[Client], serverName, List(port), responder, defaultThrottlerProps, "UTF-8", 5, 30 seconds)
   def props(serverName: String, ports: List[Int], responder: ActorRef) =
-    Props(classOf[Client], serverName, ports, responder, defaultThrottlerProps, "UTF-8", 5)
+    Props(classOf[Client], serverName, ports, responder, defaultThrottlerProps, "UTF-8", 5, 30 seconds)
   def props(serverName: String, ports: List[Int], responder: ActorRef, throttlerProps: Props) =
-    Props(classOf[Client], serverName, ports, responder, defaultThrottlerProps, "UTF-8", 5)
+    Props(classOf[Client], serverName, ports, responder, defaultThrottlerProps, "UTF-8", 5, 30 seconds)
   def props(serverName: String, ports: List[Int], responder: ActorRef, throttlerProps: Props, charset: String,
-             maxTries: Int) = Props(classOf[Client], serverName, ports, responder, throttlerProps, charset, maxTries)
+             maxTries: Int, retryTick: FiniteDuration) = Props(classOf[Client], serverName, ports, responder,
+             throttlerProps, charset, maxTries, retryTick)
 }
 
 class Client(serverName:String, ports:List[Int], responder:ActorRef, throttlerProps: Props,
-              charset: String, maxTries: Int) extends Actor with Logging {
+              charset: String, maxTries: Int, retryTick: FiniteDuration) extends Actor with Logging {
   var retry = 1
   var handler: ActorRef = _
 
@@ -84,9 +86,9 @@ class Client(serverName:String, ports:List[Int], responder:ActorRef, throttlerPr
 
       },discardOld = false)
     case Reconnect =>
-      if(retry < maxTries){
-        logger.info(s"retrying vol...$retry")
-        context.system.scheduler.scheduleOnce(30 seconds){
+      if(retry < maxTries && context.children.size == 0){
+        context.system.scheduler.scheduleOnce(retryTick){
+          logger.info(s"retrying vol...$retry")
           retry += 1
           self ! Connect(Random.shuffle(ports).head)
         }
