@@ -6,10 +6,11 @@ import akka.actor._
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-import com.typesafe.scalalogging.log4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
+import scala.io.StdIn
 
 class ExampleBot(
   val serverName:String,
@@ -18,7 +19,7 @@ class ExampleBot(
   val password:String,
   val realName:String,
   val rooms:List[Room]
-) extends ClassicBot with Logging {
+) extends ClassicBot with LazyLogging {
 
   nick = nickName
 
@@ -36,7 +37,7 @@ class ExampleBot(
                 before orElse invite
 }
 
-object Main extends App with Logging {
+object Main extends App with LazyLogging {
 
   val rooms = List(Room("#blaa", None, autoJoin = true))
 
@@ -64,6 +65,6 @@ object Main extends App with Logging {
 
   sys.addShutdownHook(exit())
 
-  readLine(s"Exit: press enter ...${System.getProperty("line.separator")}")
+  StdIn.readLine(s"Exit: press enter ...${System.getProperty("line.separator")}")
   exit()
 }

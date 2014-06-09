@@ -1,7 +1,8 @@
 package org.conbere.irc
 
 import java.net.InetSocketAddress
-import com.typesafe.scalalogging.log4j.Logging
+
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 import scala.concurrent.duration._
 
@@ -39,7 +40,7 @@ object Client {
 }
 
 class Client(serverName:String, ports:List[Int], responder:ActorRef, throttlerProps: Props,
-              charset: String, maxTries: Int, retryTick: FiniteDuration) extends Actor with Logging {
+              charset: String, maxTries: Int, retryTick: FiniteDuration) extends Actor with LazyLogging {
   var retry = 1
   var handler: ActorRef = _
 
@@ -94,7 +95,7 @@ class Client(serverName:String, ports:List[Int], responder:ActorRef, throttlerPr
         }
       }
       else{
-        throw new RuntimeException("Could not connect and max tries exceeded. " +
+         throw ConnectionException.create("Could not connect and max tries exceeded. " +
           "Throwing an exception and restarting...")
       }
     case Stop =>

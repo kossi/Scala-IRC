@@ -5,9 +5,9 @@ import org.conbere.irc.Messages._
 import scala.util.Random
 
 
-import com.typesafe.scalalogging.log4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
-trait Bot extends Actor with Logging {
+trait Bot extends Actor with LazyLogging {
   // a list of channels to join
   val rooms:List[Room]
 

@@ -12,7 +12,7 @@ licenses := Seq("BSD-style" -> url("http://www.opensource.org/licenses/bsd-licen
 
 homepage := Some(url("http://github.com/aconbere/scala-irc"))
 
-scalaVersion := "2.10.3"
+scalaVersion := "2.11.1"
 
 scalacOptions ++= Seq(
   "-deprecation",
@@ -26,13 +26,14 @@ resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/release
 testOptions in Test += Tests.Argument("-oDF")
 
 libraryDependencies ++= Seq(
-  "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test"
+  "org.scalatest" %% "scalatest" % "2.2.0" % "test"
 , "junit" % "junit" % "4.10" % "test"
-, "com.typesafe.akka" %% "akka-actor" % "2.3.0"
-, "com.typesafe.akka" %% "akka-contrib" % "2.3.0"
-, "org.apache.logging.log4j" % "log4j-core" % "2.0-beta9"
-, "com.typesafe" %% "scalalogging-log4j" % "1.0.1"
+, "com.typesafe.akka" %% "akka-actor" % "2.3.3"
+, "com.typesafe.akka" %% "akka-contrib" % "2.3.3"
+, "org.slf4j" % "slf4j-simple" % "1.7.7"
+, "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2"
 , "com.typesafe" % "config" % "1.0.0"
+, "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1"
 )
 
 publishMavenStyle := true

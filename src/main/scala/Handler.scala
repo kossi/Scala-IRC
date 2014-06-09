@@ -8,7 +8,7 @@ import java.net.InetSocketAddress
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-import com.typesafe.scalalogging.log4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.conbere.irc.ControlChars._
 import org.conbere.irc.Messages.Quit
 import akka.contrib.throttle.Throttler._
@@ -20,7 +20,7 @@ object Handler {
 }
 
 class Handler(remote: InetSocketAddress, connection: ActorRef, responder:ActorRef,
-               throttlerProps: Props,charset: String) extends Actor with Logging {
+               throttlerProps: Props,charset: String) extends Actor with LazyLogging {
   val hostName = java.net.InetAddress.getLocalHost.getHostName
 
   val throttler = context.actorOf(throttlerProps)
