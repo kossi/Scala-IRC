@@ -79,7 +79,9 @@ object Parser extends RegexParsers {
 
   lazy val mask:Parser[UserMask] =  """[#|$].+""".r ^^ (UserMask(_))
   lazy val letter = """[a-zA-Z]""".r
-  lazy val user = (opt('~') ~> nick)
+  lazy val user = """([~]{1})?""".r ~ nick ^^ {
+    case t ~ n => t+n
+  }
   lazy val startsWithColon = """:.+""".r
   lazy val word = """[a-zA-Z]*""".r
   lazy val number = """[0-9]""".r
