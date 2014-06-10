@@ -30,7 +30,6 @@ libraryDependencies ++= Seq(
 , "junit" % "junit" % "4.10" % "test"
 , "com.typesafe.akka" %% "akka-actor" % "2.3.3"
 , "com.typesafe.akka" %% "akka-contrib" % "2.3.3"
-, "org.slf4j" % "slf4j-simple" % "1.7.7"
 , "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2"
 , "com.typesafe" % "config" % "1.0.0"
 , "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1"
