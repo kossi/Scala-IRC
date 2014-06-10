@@ -143,4 +143,16 @@ class ParserSuite extends FunSuite {
         false
     }, "failed to parser message with underscore: " + prefix)
   }
+
+  test("can parse usernames with tilde"){
+    val prefix = "testi!~testi@localhost"
+    assert(Parser.parseAll(Parser.prefix, prefix) match {
+      case Parser.Success(Prefix("testi", Some("~testi"), Some("localhost")), _) =>
+        true
+      case parse =>
+        println(parse)
+        false
+    }, "failed to parser message with tilde in username: " + prefix)
+  }
+
 }

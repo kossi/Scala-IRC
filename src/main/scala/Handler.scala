@@ -12,11 +12,13 @@ import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.conbere.irc.ControlChars._
 import org.conbere.irc.Messages.Quit
 import akka.contrib.throttle.Throttler._
+import scala.annotation.tailrec
 
 
 object Handler {
   def props(remote: InetSocketAddress, connection: ActorRef, responder: ActorRef, throttlerProps: Props,
             charset: String) = Props(classOf[Handler], remote, connection, responder, throttlerProps, charset)
+  val CR_LF = "\r\n"
 }
 
 class Handler(remote: InetSocketAddress, connection: ActorRef, responder:ActorRef,
@@ -33,6 +35,8 @@ class Handler(remote: InetSocketAddress, connection: ActorRef, responder:ActorRe
 
   context.watch(connection)
   context.watch(throttler)
+
+  var buffer: Option[String] = None
 
 
   def parseMessage(str:String) =
@@ -54,6 +58,20 @@ class Handler(remote: InetSocketAddress, connection: ActorRef, responder:ActorRe
     responder ! Connected
   }
 
+  @tailrec
+  private def respondToInput(in: String){
+    buffer match{
+      case Some(bufferedInput) =>
+        buffer = None
+        respondToInput(bufferedInput + in)
+      case None =>
+        for(message <- parseMessage(in)) {
+          responder ! message
+        }
+    }
+  }
+
+
   def receive = {
     case response: Response =>
       logger.debug("send: "+response.toString)
@@ -61,11 +79,23 @@ class Handler(remote: InetSocketAddress, connection: ActorRef, responder:ActorRe
     case CommandFailed(w: Write) =>
       logger.info(s"write failed: ${w.data.decodeString(charset)}")
     case Received(data) =>
-     data.decodeString(charset).split("\r\n") map {in =>
-       for(message <- parseMessage(in)) {
-         responder ! message
-       }
-     }
+      val input = data.decodeString(charset)
+      val ins = input.split(Handler.CR_LF)
+
+      handleInput(0)
+
+      @tailrec def handleInput(index: Int){
+        if(index < ins.length-1){
+          respondToInput(ins(index))
+          handleInput(index+1)
+        }
+        else{
+          input takeRight 2 match{
+            case Handler.CR_LF => respondToInput(ins(index))
+            case _ => buffer = Some(ins(index))
+          }
+        }
+      }
     case ReceiveTimeout =>
       context.setReceiveTimeout(Duration.Undefined)
       context.parent ! Reconnect

@@ -42,7 +42,7 @@ object Parser extends RegexParsers {
   }
 
   lazy val prefix:Parser[Prefix] =
-    (serverName | nick ) ~ opt( '!' ~> user ) ~ opt( '@' ~> serverName ) ^^ {
+    (serverName | nick ) ~ opt( '!' ~> user) ~ opt( '@' ~> serverName ) ^^ {
     case t~u~s => Prefix(t, u, s)
   }
 
@@ -79,7 +79,7 @@ object Parser extends RegexParsers {
 
   lazy val mask:Parser[UserMask] =  """[#|$].+""".r ^^ (UserMask(_))
   lazy val letter = """[a-zA-Z]""".r
-  lazy val user =  opt('~') ~> nick
+  lazy val user = (opt('~') ~> nick)
   lazy val startsWithColon = """:.+""".r
   lazy val word = """[a-zA-Z]*""".r
   lazy val number = """[0-9]""".r

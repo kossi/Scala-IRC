@@ -2,6 +2,7 @@ package org.conbere.irc
 
 import akka.util.{ ByteString, ByteStringBuilder }
 import ControlChars._
+import scala.annotation.tailrec
 
 object Tokens {
 
@@ -35,7 +36,7 @@ object Tokens {
        prefix.map { p => p.byteString }.getOrElse(ByteString(""))
       
     def mkParamsString(params:List[String]) = {
-      def inner(ps:List[String], acc:String):String =
+      @tailrec def inner(ps:List[String], acc:String):String =
         ps match {
           case x :: y :: xs =>
             inner(xs, acc + " " + x + " " + y)
