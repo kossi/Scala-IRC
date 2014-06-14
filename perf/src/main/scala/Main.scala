@@ -4,6 +4,7 @@ import org.conbere.irc.PEGParser
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.Try
+import java.util.concurrent.TimeUnit
 
 object Main extends App{
 
@@ -35,14 +36,14 @@ object Main extends App{
     (1 to iter).foreach(_ => lines.par.foreach( m => PEGParser(m).get))
   }
   println(s"# Elapsed time: ${test._2.toMillis} ms,  msgs/sec: "+
-    s"${(iter * lines.size)/test._2.toSeconds}")
+    f"${(iter * lines.size)/test._2.toUnit(TimeUnit.SECONDS)}%.0f")
   println(s"*** REGEX - ${lines.size} msgs ${iter/1000}k iterations ***")
   val test2 = time{
     (1 to iter).foreach(_ => lines.par.foreach(m => Parser(m).get))
   }
 
   println(s"# Elapsed time: ${test2._2.toMillis} ms, msgs/sec: "+
-    s"${(iter * lines.size)/test2._2.toSeconds}")
+    f"${(iter * lines.size)/test2._2.toUnit(TimeUnit.SECONDS)}%.0f")
 
 
   sys.exit()
