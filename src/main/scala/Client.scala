@@ -87,7 +87,14 @@ class Client(serverName:String, ports:List[Int], responder:ActorRef, throttlerPr
 
       },discardOld = false)
     case Reconnect =>
-      if(retry < maxTries && context.children.size == 0){
+      if(retry < maxTries){
+        if(context.children.size != 0){
+          logger.info(s"Children still alive. Waiting 20s...")
+          context.system.scheduler.scheduleOnce(20 seconds){
+            retry += 1
+            self ! Connect(Random.shuffle(ports).head)
+          }
+        }
         context.system.scheduler.scheduleOnce(retryTick){
           logger.info(s"retrying vol...$retry")
           retry += 1
