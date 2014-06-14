@@ -2,8 +2,10 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 
-import org.conbere.irc.Parser
+import org.conbere.irc.PEGParser
 import org.conbere.irc.Tokens._
+
+import scala.util.Success
 
 @RunWith(classOf[JUnitRunner])
 class ParserSuite extends FunSuite {
@@ -68,10 +70,11 @@ class ParserSuite extends FunSuite {
         , "KILL David (csd.bu.edu <- tolsun.oulu.fi)"
         )
 
+
   test("can parse") {
     messages.foreach { m =>
-      assert(Parser.apply(m) match {
-        case Parser.Success(_,_) => true
+      assert(PEGParser(m) match {
+        case Success(_) => true
         case _ => false
       }, "Failed to parse: " + m)
     }
@@ -79,12 +82,12 @@ class ParserSuite extends FunSuite {
 
   test("can parse messages from the server with a prefix") {
     val message = ":irc02.test.server.com 461 aconbot JOIN :Not enough parameters"
-    assert(Parser.apply(message) match {
-      case Parser.Success(Message(Some(Prefix("irc02.test.server.com", None, None)),
-                                  Command("461"),
-                                  List("aconbot",
-                                       "JOIN",
-                                       "Not enough parameters")), _) =>
+    assert(PEGParser(message) match {
+      case Success(Message(Some(Prefix("irc02.test.server.com", None, None)),
+        Command("461"),
+        List("aconbot",
+        "JOIN",
+        "Not enough parameters"))) =>
         true
       case parse =>
         println(parse)
@@ -96,15 +99,15 @@ class ParserSuite extends FunSuite {
     val stringCommand = "JOIN"
     val numericCommand = "461"
 
-    assert(Parser.parseAll(Parser.command, stringCommand) match {
-      case Parser.Success(Command("JOIN"), _) =>
+    assert(new PEGParser(stringCommand).Command.run() match {
+      case Success(Command("JOIN")) =>
         true
       case _ =>
         false
     }, "Failed to parse command: " + stringCommand)
 
-    assert(Parser.parseAll(Parser.command, numericCommand) match {
-      case Parser.Success(Command("461"), _) =>
+    assert(new PEGParser(numericCommand).Command.run() match {
+      case Success(Command("461")) =>
         true
       case _ =>
         false
@@ -115,16 +118,16 @@ class ParserSuite extends FunSuite {
     val server = "irc02.test.server.com"
     val nick = "username!username@756.455.45.45"
 
-    assert(Parser.parseAll(Parser.prefix, server) match {
-      case Parser.Success(Prefix("irc02.test.server.com", None, None), _) =>
+    assert(new PEGParser(server).Prefix.run() match {
+      case Success(Prefix("irc02.test.server.com", None, None)) =>
         true
       case parse =>
         println(parse)
         false
     }, "Failed to parse server prefix: " + server)
 
-    assert(Parser.parseAll(Parser.prefix, nick) match {
-      case Parser.Success(Prefix("username", Some("username"), Some("756.455.45.45")), _) =>
+    assert(new PEGParser(nick).Prefix.run() match {
+      case Success(Prefix("username", Some("username"), Some("756.455.45.45"))) =>
         true
       case parse =>
         println(parse)
@@ -135,19 +138,22 @@ class ParserSuite extends FunSuite {
 
   test("can parse underscore usernames") {
     val prefix = "aconbere_!aconbere@172.16.18.94"
-    assert(Parser.parseAll(Parser.prefix, prefix) match {
-      case Parser.Success(Prefix("aconbere_", Some("aconbere"), Some("172.16.18.94")), _) =>
+    assert(new PEGParser(prefix).Prefix.run() match {
+      case Success(Prefix("aconbere_", Some("aconbere"), Some("172.16.18.94"))) =>
         true
       case parse =>
         println(parse)
         false
     }, "failed to parser message with underscore: " + prefix)
+
   }
 
   test("can parse usernames with tilde"){
     val prefix = "testi!~testi@localhost"
-    assert(Parser.parseAll(Parser.prefix, prefix) match {
-      case Parser.Success(Prefix("testi", Some("~testi"), Some("localhost")), _) =>
+
+
+    assert(new PEGParser(prefix).Prefix.run() match {
+      case Success(Prefix("testi", Some("~testi"), Some("localhost"))) =>
         true
       case parse =>
         println(parse)

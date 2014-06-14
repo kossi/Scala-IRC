@@ -52,7 +52,7 @@ object Tokens {
       }
     }
 
-    val byteString = 
+    lazy val byteString =
       (new ByteStringBuilder ++=
         mkPrefixByteString(prefix) ++=
         command.byteString ++=

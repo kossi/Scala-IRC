@@ -11,6 +11,7 @@ import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
 import scala.io.StdIn
+import scala.util.{Failure, Success}
 
 class ExampleBot(
   val serverName:String,
@@ -36,6 +37,7 @@ class ExampleBot(
   def receive = onConnect orElse altDefaultHandler orElse
                 before orElse invite
 }
+
 
 object Main extends App with LazyLogging {
 

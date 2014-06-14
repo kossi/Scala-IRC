@@ -1,4 +1,5 @@
-package org.conbere.irc
+package org.conbere.irc.perf
+
 /*
 <message>    ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
 <prefix>     ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
@@ -27,7 +28,7 @@ package org.conbere.irc
 
 import scala.util.parsing.combinator.RegexParsers
 import akka.util.{ ByteString, ByteStringBuilder }
-import Tokens._
+import org.conbere.irc.Tokens._
 
 object Parser extends RegexParsers {
   override def skipWhitespace = false

@@ -4,7 +4,7 @@ assemblySettings
 
 name := "irc"
 
-version := "0.5.1-SNAPSHOT"
+version := "0.5.2-SNAPSHOT"
 
 organization := "org.conbere"
 
@@ -32,7 +32,8 @@ libraryDependencies ++= Seq(
 , "com.typesafe.akka" %% "akka-contrib" % "2.3.3"
 , "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2"
 , "com.typesafe" % "config" % "1.0.0"
-, "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1"
+, "org.parboiled" %% "parboiled" % "2.0.0-RC2"
+, "org.slf4j" % "slf4j-simple" % "1.7.7" % "test"
 )
 
 publishMavenStyle := true

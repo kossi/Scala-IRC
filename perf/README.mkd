@@ -1,0 +1,25 @@
+# Scala IRC performance tests with a new parser
+
+A simple parsing benchmark to check performance of the new parser class build with the cool [Parboiled 2 library](https://github.com/sirthias/parboiled2)
+
+Should have the same functionality as the older regexp scala combinators parser but doesn't probably fully comply the 
+IRC protocol and may have some terrible mistakes. Though it works well enough with a simple bot.
+
+An example result with a Win7 x64 Core i5 3317U (2x1,7 GHz) 8 GB laptop:
+ 
+###### $ java -version
+
+```
+java version "1.8.0"
+Java(TM) SE Runtime Environment (build 1.8.0-b132)
+Java HotSpot(TM) 64-Bit Server VM (build 25.0-b70, mixed mode)
+```
+
+###### $ java -jar target/scala-2.11/irc-perf-assembly-0.0.1-SNAPSHOT.jar 
+
+```
+*** PEGP2 - 1625 msgs 1k iterations ***
+# Elapsed time: 4759 ms,  msgs/sec: 406250
+*** REGEX - 1625 msgs 1k iterations ***
+# Elapsed time: 14679 ms, msgs/sec: 116071
+```

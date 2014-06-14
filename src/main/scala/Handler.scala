@@ -7,12 +7,14 @@ import java.net.InetSocketAddress
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
+import scala.util.Success
 
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.conbere.irc.ControlChars._
 import org.conbere.irc.Messages.Quit
 import akka.contrib.throttle.Throttler._
 import scala.annotation.tailrec
+
 
 
 object Handler {
@@ -40,8 +42,8 @@ class Handler(remote: InetSocketAddress, connection: ActorRef, responder:ActorRe
 
 
   def parseMessage(str:String) =
-    Parser.apply(str) match {
-      case Parser.Success(message, _) =>
+    PEGParser(str) match {
+      case Success(message) =>
         logger.debug(s"Received: $message")
         Some(message)
       case _ =>
