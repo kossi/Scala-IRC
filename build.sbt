@@ -32,7 +32,7 @@ libraryDependencies ++= Seq(
 , "com.typesafe.akka" %% "akka-contrib" % "2.3.3"
 , "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2"
 , "com.typesafe" % "config" % "1.0.0"
-, "org.parboiled" %% "parboiled" % "2.0.0-RC2"
+, "org.parboiled" %% "parboiled" % "2.0.0"
 , "org.slf4j" % "slf4j-simple" % "1.7.7" % "test"
 )
 
