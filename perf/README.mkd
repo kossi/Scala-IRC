@@ -15,11 +15,15 @@ Java(TM) SE Runtime Environment (build 1.8.0-b132)
 Java HotSpot(TM) 64-Bit Server VM (build 25.0-b70, mixed mode)
 ```
 
-###### $ java -jar target/scala-2.11/irc-perf-assembly-0.0.1-SNAPSHOT.jar 
+###### $ java -jar target/scala-2.11/irc-perf-assembly-0.0.2-SNAPSHOT.jar 
 
 ```
 *** PEGP2 - 1625 msgs 1k iterations ***
-# Elapsed time: 4746 ms,  msgs/sec: 342374
+# Elapsed time: 4655 ms,  msgs/sec: 349065
+# PING command avg parse time: 0,00136 ms
+# PRIVMSG length of 190 avg parse time: 0,00636 ms
 *** REGEX - 1625 msgs 1k iterations ***
-# Elapsed time: 11650 ms, msgs/sec: 139483
+# Elapsed time: 11003 ms, msgs/sec: 147680
+# PING command avg parse time: 0,00938 ms
+# PRIVMSG length of 190 avg parse time: 0,02529 ms
 ```

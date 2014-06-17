@@ -3,7 +3,6 @@ import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import akka.util.ByteString
 
-import org.conbere.irc.Parser
 import org.conbere.irc.Tokens._
 import org.conbere.irc.Messages._
 

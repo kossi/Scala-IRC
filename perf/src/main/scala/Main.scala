@@ -30,6 +30,9 @@ object Main extends App{
 
 
   val iter = if(args.isEmpty) 1000 else Try(args(0).toInt) getOrElse 1000
+  val avg = 1 to iter*100
+
+  // PEG Parboiled 2
 
   println(s"*** PEGP2 - ${lines.size} msgs ${iter/1000}k iterations ***")
   val test = time{
@@ -37,6 +40,17 @@ object Main extends App{
   }
   println(s"# Elapsed time: ${test._2.toMillis} ms,  msgs/sec: "+
     f"${(iter * lines.size)/test._2.toUnit(TimeUnit.SECONDS)}%.0f")
+
+  println("# PING command avg parse time: "+
+    f"${time{avg.foreach(_ => PEGParser(lines(4)).get)
+    }._2.toUnit(TimeUnit.MILLISECONDS)/avg.size.toDouble}%.5f ms")
+
+  println(s"# PRIVMSG length of ${lines(98).length} avg parse time: "+
+    f"${time{avg.foreach(_ => PEGParser(lines(98)).get)
+    }._2.toUnit(TimeUnit.MILLISECONDS)/avg.size.toDouble}%.5f ms")
+
+  // REGEXP
+
   println(s"*** REGEX - ${lines.size} msgs ${iter/1000}k iterations ***")
   val test2 = time{
     (1 to iter).foreach(_ => lines.par.foreach(m => Parser(m).get))
@@ -44,6 +58,14 @@ object Main extends App{
 
   println(s"# Elapsed time: ${test2._2.toMillis} ms, msgs/sec: "+
     f"${(iter * lines.size)/test2._2.toUnit(TimeUnit.SECONDS)}%.0f")
+
+  println("# PING command avg parse time: "+
+    f"${time{avg.foreach(_ => Parser(lines(4)).get)
+    }._2.toUnit(TimeUnit.MILLISECONDS)/avg.size.toDouble}%.5f ms")
+
+  println(s"# PRIVMSG length of ${lines(98).length} avg parse time: "+
+    f"${time{avg.foreach(_ => Parser(lines(98)).get)
+    }._2.toUnit(TimeUnit.MILLISECONDS)/avg.size.toDouble}%.5f ms")
 
 
   sys.exit()

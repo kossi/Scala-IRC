@@ -2,9 +2,9 @@ import AssemblyKeys._
 
 assemblySettings
 
-name := "irc-perf"
+name := "irc-example"
 
-version := "0.0.2-SNAPSHOT"
+version := "0.0.1-SNAPSHOT"
 
 licenses := Seq("BSD-style" -> url("http://www.opensource.org/licenses/bsd-license.php"))
 
@@ -16,17 +16,13 @@ scalacOptions ++= Seq(
   "-feature"
 )
 
-libraryDependencies ++= Seq(
- "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1"
-)
-
 val noPub = Seq(
   publishArtifact := false,
   publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))))
 
 lazy val scalaIRC = RootProject( file("../.") )
 
-lazy val root = Project(id = "irc-perf", base = file("."))
+lazy val root = Project(id = "irc-example", base = file("."))
   .dependsOn(scalaIRC)
   .settings(noPub: _*)
 

@@ -14,6 +14,8 @@ homepage := Some(url("http://github.com/aconbere/scala-irc"))
 
 scalaVersion := "2.11.1"
 
+crossScalaVersions := Seq("2.10.4", "2.11.1")
+
 scalacOptions ++= Seq(
   "-deprecation",
   "-feature"
