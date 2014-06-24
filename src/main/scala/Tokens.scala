@@ -12,7 +12,7 @@ object Tokens {
 
   sealed trait SimpleToken extends Token {
     val value:String
-    val byteString = ByteString(value)
+    lazy val byteString = ByteString(value)
   }
 
   case class Channel(value:String) extends SimpleToken
@@ -22,7 +22,7 @@ object Tokens {
 
   case class Prefix(target:String, user:Option[String], host:Option[String])
   extends Token {
-    val byteString =
+    lazy val byteString =
       ByteString(List(target,
                  user.getOrElse(""),
                  host.getOrElse("")).mkString(" "))

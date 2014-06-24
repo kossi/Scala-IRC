@@ -30,7 +30,9 @@ object Main extends App{
 
 
   val iter = if(args.isEmpty) 1000 else Try(args(0).toInt) getOrElse 1000
-  val avg = 1 to iter*100
+  val avg = 0 to iter*100
+  val rndFill = 100
+  val rnd = Seq.fill(rndFill)(scala.util.Random.nextInt(1624))
 
   // PEG Parboiled 2
 
@@ -49,6 +51,16 @@ object Main extends App{
     f"${time{avg.foreach(_ => PEGParser(lines(98)).get)
     }._2.toUnit(TimeUnit.MILLISECONDS)/avg.size.toDouble}%.5f ms")
 
+
+  val r100time =  avg.map{i =>
+    val line = lines(rnd(i - ((i/rndFill)*rndFill)))
+    time(PEGParser(line).get)._2.toNanos
+  }.sum
+
+  println("# Random100 avg parse time: "+
+    f"${Duration(r100time, "nanos").toUnit(TimeUnit.MILLISECONDS)/avg.size.toDouble}%.5f ms")
+
+
   // REGEXP
 
   println(s"*** REGEX - ${lines.size} msgs ${iter/1000}k iterations ***")
@@ -66,6 +78,19 @@ object Main extends App{
   println(s"# PRIVMSG length of ${lines(98).length} avg parse time: "+
     f"${time{avg.foreach(_ => Parser(lines(98)).get)
     }._2.toUnit(TimeUnit.MILLISECONDS)/avg.size.toDouble}%.5f ms")
+
+
+  val r100time2 =  avg.map{i =>
+    val line = lines(rnd(i - ((i/rndFill)*rndFill)))
+    time(Parser(line).get)._2.toNanos
+  }.sum
+
+  println("# Random100 avg parse time: "+
+    f"${Duration(r100time2, "nanos").toUnit(TimeUnit.MILLISECONDS)/avg.size.toDouble}%.5f ms")
+
+  val cmds = for(i <- 0 until rndFill) yield PEGParser(lines(rnd(i))).get.command
+  println("# Random100 commands were: "+
+    s"${cmds.groupBy(c => c.value).map(t => (t._1, t._2.length)).mkString(", ")}")
 
 
   sys.exit()

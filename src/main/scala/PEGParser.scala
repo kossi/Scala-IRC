@@ -8,7 +8,7 @@ object PEGParser{
   val nick = CharPredicate('{', '}') ++ special
   val host = CharPredicate('.') ++ special
   val CRLF = CharPredicate('\r', '\n')
-  val white = CharPredicate(" \t\f") ++ CRLF
+  val white = CharPredicate('\t', '\f') ++ CRLF
 
   def apply(input: ParserInput) = new PEGParser(input).InputLine.run()
 }
@@ -45,15 +45,15 @@ class PEGParser(val input: ParserInput) extends Parser{
       } )
   }
   def End: Rule1[Option[String]] = rule{
-    optional(Space ~ ':' ~ capture(zeroOrMore(ANY ~ !PEGParser.CRLF)))
+    optional(Space ~ ':' ~ capture(oneOrMore(ANY ~ !PEGParser.CRLF)))
   }
 
-  def Space = rule{ oneOrMore(CharPredicate(' ')) }
+  def Space = rule{ oneOrMore(' ') }
 
   def ServerName = rule{ oneOrMore(CharPredicate.AlphaNum ++ PEGParser.host) }
 
   def Nick = rule{ oneOrMore(CharPredicate.AlphaNum ++ PEGParser.nick) }
 
-  def User = rule{ optional(ch('~')) ~ Nick }
+  def User = rule{ optional('~') ~ Nick }
 
 }

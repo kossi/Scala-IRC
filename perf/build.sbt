@@ -4,7 +4,7 @@ assemblySettings
 
 name := "irc-perf"
 
-version := "0.0.2-SNAPSHOT"
+version := "0.0.3-SNAPSHOT"
 
 licenses := Seq("BSD-style" -> url("http://www.opensource.org/licenses/bsd-license.php"))
 

@@ -15,15 +15,20 @@ Java(TM) SE Runtime Environment (build 1.8.0-b132)
 Java HotSpot(TM) 64-Bit Server VM (build 25.0-b70, mixed mode)
 ```
 
-###### $ java -jar target/scala-2.11/irc-perf-assembly-0.0.2-SNAPSHOT.jar 
+###### $ java -jar target/scala-2.11/irc-perf-assembly-0.0.3-SNAPSHOT.jar 
 
 ```
 *** PEGP2 - 1625 msgs 1k iterations ***
-# Elapsed time: 4655 ms,  msgs/sec: 349065
-# PING command avg parse time: 0,00136 ms
-# PRIVMSG length of 190 avg parse time: 0,00636 ms
+# Elapsed time: 4157 ms,  msgs/sec: 390868
+# PING command avg parse time: 0,00190 ms
+# PRIVMSG length of 190 avg parse time: 0,00589 ms
+# Random100 avg parse time: 0,00391 ms
 *** REGEX - 1625 msgs 1k iterations ***
-# Elapsed time: 11003 ms, msgs/sec: 147680
-# PING command avg parse time: 0,00938 ms
-# PRIVMSG length of 190 avg parse time: 0,02529 ms
+# Elapsed time: 11738 ms, msgs/sec: 138431
+# PING command avg parse time: 0,00740 ms
+# PRIVMSG length of 190 avg parse time: 0,01846 ms
+# Random100 avg parse time: 0,01380 ms
+# Random100 commands were: 001 -> 1, NOTICE -> 5, JOIN -> 1, 005 -> 5, 004 -> 1, 255 -> 1, 253 -> 1,
+353 -> 2, 375 -> 1, 422 -> 1, 372 -> 60, MODE -> 2, 003 -> 2, 252 -> 2, 221 -> 1, 376 -> 3, INVITE -> 1,
+ 333 -> 1, 251 -> 1, 002 -> 2, PING -> 2, 254 -> 1, PRIVMSG -> 3
 ```
