@@ -35,7 +35,7 @@ class PEGParser(val input: ParserInput) extends Parser{
   }
 
   def Params: Rule1[List[String]] = rule{
-    optional(Space ~ oneOrMore(!ch(':') ~ capture(oneOrMore(
+    optional(Space ~ oneOrMore(!':' ~ capture(oneOrMore(
       CharPredicate.Visible -- PEGParser.white))).separatedBy(' ')) ~ End  ~> (
       (mid: Option[Seq[String]], end: Option[String]) => (mid, end) match{
         case (Some(m), Some(e)) => (m :+ e).toList
@@ -45,7 +45,7 @@ class PEGParser(val input: ParserInput) extends Parser{
       } )
   }
   def End: Rule1[Option[String]] = rule{
-    optional(Space ~ ':' ~ capture(oneOrMore(ANY ~ !PEGParser.CRLF)))
+    optional(Space ~ ':' ~ capture(oneOrMore(ANY)))
   }
 
   def Space = rule{ oneOrMore(' ') }

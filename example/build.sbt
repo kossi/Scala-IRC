@@ -1,7 +1,3 @@
-import AssemblyKeys._
-
-assemblySettings
-
 name := "irc-example"
 
 version := "0.0.1-SNAPSHOT"
@@ -16,14 +12,13 @@ scalacOptions ++= Seq(
   "-feature"
 )
 
-val noPub = Seq(
-  publishArtifact := false,
-  publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))))
+publishArtifact := false
+
+publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo")))
 
 lazy val scalaIRC = RootProject( file("../.") )
 
 lazy val root = Project(id = "irc-example", base = file("."))
   .dependsOn(scalaIRC)
-  .settings(noPub: _*)
 
 

@@ -20,14 +20,15 @@ libraryDependencies ++= Seq(
  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1"
 )
 
-val noPub = Seq(
-  publishArtifact := false,
-  publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))))
+publishArtifact := false
+
+publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo")))
+
+cappiSettings
 
 lazy val scalaIRC = RootProject( file("../.") )
 
 lazy val root = Project(id = "irc-perf", base = file("."))
   .dependsOn(scalaIRC)
-  .settings(noPub: _*)
 
 
