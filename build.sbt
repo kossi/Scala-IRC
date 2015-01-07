@@ -30,8 +30,8 @@ testOptions in Test += Tests.Argument("-oDF")
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.0" % "test"
 , "junit" % "junit" % "4.10" % "test"
-, "com.typesafe.akka" %% "akka-actor" % "2.3.7"
-, "com.typesafe.akka" %% "akka-contrib" % "2.3.7"
+, "com.typesafe.akka" %% "akka-actor" % "2.3.8"
+, "com.typesafe.akka" %% "akka-contrib" % "2.3.8"
 , "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2"
 , "com.typesafe" % "config" % "1.0.0"
 , "org.parboiled" %% "parboiled" % "2.0.1"
