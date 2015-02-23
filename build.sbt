@@ -4,7 +4,7 @@ assemblySettings
 
 name := "irc"
 
-version := "0.5.2-SNAPSHOT"
+version := "0.5.3-SNAPSHOT"
 
 organization := "org.conbere"
 
@@ -12,7 +12,7 @@ licenses := Seq("BSD-style" -> url("http://www.opensource.org/licenses/bsd-licen
 
 homepage := Some(url("http://github.com/aconbere/scala-irc"))
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.5"
 
 crossScalaVersions := Seq("2.10.4", "2.11.1", "2.11.4")
 
@@ -23,18 +23,21 @@ scalacOptions ++= Seq(
 
 fork in run := false
 
-resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+resolvers ++= Seq(
+  "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+, "Typesafe Snapshot Repo" at "http://repo.typesafe.com/typesafe/snapshots/"
+)
 
 testOptions in Test += Tests.Argument("-oDF")
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.0" % "test"
 , "junit" % "junit" % "4.10" % "test"
-, "com.typesafe.akka" %% "akka-actor" % "2.3.8"
-, "com.typesafe.akka" %% "akka-contrib" % "2.3.8"
+, "com.typesafe.akka" %% "akka-actor" % "2.3.9"
+, "com.typesafe.akka" %% "akka-contrib" % "2.3.9"
 , "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2"
 , "com.typesafe" % "config" % "1.0.0"
-, "org.parboiled" %% "parboiled" % "2.0.1"
+, "org.parboiled" %% "parboiled" % "2.1.0"
 , "org.slf4j" % "slf4j-simple" % "1.7.7" % "test"
 )
 

@@ -26,9 +26,11 @@ package org.conbere.irc.perf
 <nonwhite>   ::= <any 8bit code except SPACE (0x20), NUL (0x0), CR (0xd), and LF (0xa)>
 */
 
+import org.conbere.irc.model.Tokens
+
 import scala.util.parsing.combinator.RegexParsers
 import akka.util.{ ByteString, ByteStringBuilder }
-import org.conbere.irc.Tokens._
+import Tokens._
 
 object Parser extends RegexParsers {
   override def skipWhitespace = false

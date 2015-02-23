@@ -1,8 +1,6 @@
-package org.conbere.irc
+package org.conbere.irc.model
 
 import akka.util.ByteString
-
-import Tokens.Message
 
 trait Response {
   def +(r:Response):ResponseCollection

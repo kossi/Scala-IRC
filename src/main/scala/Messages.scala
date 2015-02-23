@@ -1,6 +1,6 @@
 package org.conbere.irc
 
-import Tokens._
+import org.conbere.irc.model.Tokens.{Command, Message, Prefix}
 
 object Messages {
   object Pong {

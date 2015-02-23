@@ -1,7 +1,8 @@
-package org.conbere.irc 
+package org.conbere.irc.model
 
-import akka.util.{ ByteString, ByteStringBuilder }
+import akka.util.{ByteString, ByteStringBuilder}
 import ControlChars._
+
 import scala.annotation.tailrec
 
 object Tokens {

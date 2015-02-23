@@ -1,8 +1,6 @@
-package org.conbere.irc
+package org.conbere.irc.model
 
 object Implicits {
-  import Tokens._
-  import Messages._
 
   implicit class AddableOption(a:Option[Response]) {
     def + (b:Option[Response]):Option[Response] =

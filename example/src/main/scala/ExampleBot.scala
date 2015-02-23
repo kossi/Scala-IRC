@@ -1,5 +1,6 @@
-package org.conbere.irc
+package org.conbere.irc.example
 
+import org.conbere.irc._
 import Messages._
 import akka.actor._
 
@@ -10,7 +11,7 @@ import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
 
-class ExampleBot(
+class   ExampleBot(
   val serverName:String,
   val nickName:String,
   val userName:String,
@@ -22,7 +23,7 @@ class ExampleBot(
   nick = nickName
 
   def before:Receive = {
-    case PrivMsg(from, `nickName`, text) =>
+    case PrivMsg(from, name, text) if nick == name =>
         sender ! PrivMsg(from, text)
   }
 

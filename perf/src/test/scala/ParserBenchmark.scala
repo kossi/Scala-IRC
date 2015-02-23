@@ -1,4 +1,4 @@
-import org.conbere.irc.PEGParser
+import org.conbere.irc.model.PEGParser
 import org.conbere.irc.perf.Parser
 
 import com.google.caliper.SimpleBenchmark

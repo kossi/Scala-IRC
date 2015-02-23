@@ -1,4 +1,4 @@
-package org.conbere.irc
+package org.conbere.irc.model
 
 import org.parboiled2._
 

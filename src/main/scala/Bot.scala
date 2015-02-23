@@ -1,7 +1,7 @@
 package org.conbere.irc
 
 import akka.actor._
-import org.conbere.irc.Messages._
+import Messages._
 import scala.util.Random
 
 trait Bot extends Actor{

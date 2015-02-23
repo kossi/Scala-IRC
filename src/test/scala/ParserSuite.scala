@@ -1,9 +1,8 @@
+import org.conbere.irc.model.{Tokens, PEGParser}
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
-
-import org.conbere.irc.PEGParser
-import org.conbere.irc.Tokens._
+import Tokens._
 
 import scala.util.Success
 

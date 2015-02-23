@@ -1,9 +1,7 @@
-package org.conbere.irc
+package org.conbere.irc.model
 
 import akka.util.ByteStringBuilder
 import ControlChars._
-
-import Tokens.Message
 
 class ResponseCollection(val responseList:List[Response]=List())
 extends Response {

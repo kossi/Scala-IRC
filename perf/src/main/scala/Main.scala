@@ -1,6 +1,7 @@
 package org.conbere.irc.perf
 
-import org.conbere.irc.PEGParser
+import org.conbere.irc.model.PEGParser
+
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.Try

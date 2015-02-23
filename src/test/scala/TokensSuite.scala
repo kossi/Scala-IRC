@@ -1,9 +1,10 @@
+import org.conbere.irc.model.Tokens
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import akka.util.ByteString
 
-import org.conbere.irc.Tokens._
+import Tokens._
 import org.conbere.irc.Messages._
 
 @RunWith(classOf[JUnitRunner])

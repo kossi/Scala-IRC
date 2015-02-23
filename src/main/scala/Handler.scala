@@ -5,13 +5,15 @@ import akka.io.Tcp
 import akka.util.{ByteStringBuilder, ByteString}
 import java.net.InetSocketAddress
 
+import model.{Response, ControlChars, PEGParser}
+
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.Success
 
 import com.typesafe.scalalogging.slf4j.LazyLogging
-import org.conbere.irc.ControlChars._
-import org.conbere.irc.Messages.Quit
+import ControlChars._
+import Messages.Quit
 import akka.contrib.throttle.Throttler._
 import scala.annotation.tailrec
 
@@ -19,12 +21,12 @@ import scala.annotation.tailrec
 
 object Handler {
   def props(remote: InetSocketAddress, connection: ActorRef, responder: ActorRef, throttlerProps: Props,
-            charset: String) = Props(classOf[Handler], remote, connection, responder, throttlerProps, charset)
-  val CR_LF = "\r\n"
+            charset: String, quitMsg: String) =
+    Props(classOf[Handler], remote, connection, responder, throttlerProps, charset, quitMsg)
 }
 
 class Handler(remote: InetSocketAddress, connection: ActorRef, responder:ActorRef,
-               throttlerProps: Props,charset: String) extends Actor with LazyLogging {
+               throttlerProps: Props,charset: String, quitMsg: String) extends Actor with LazyLogging {
   val hostName = java.net.InetAddress.getLocalHost.getHostName
 
   val throttler = context.actorOf(throttlerProps)
@@ -82,7 +84,7 @@ class Handler(remote: InetSocketAddress, connection: ActorRef, responder:ActorRe
       logger.info(s"write failed: ${w.data.decodeString(charset)}")
     case Received(data) =>
       val input = data.decodeString(charset)
-      val ins = input.split(Handler.CR_LF)
+      val ins = input.split(CR_LF)
 
       handleInput(0)
 
@@ -93,7 +95,7 @@ class Handler(remote: InetSocketAddress, connection: ActorRef, responder:ActorRe
         }
         else{
           input takeRight 2 match{
-            case Handler.CR_LF => respondToInput(ins(index))
+            case CR_LF => respondToInput(ins(index))
             case _ => buffer = Some(ins(index))
           }
         }
@@ -106,7 +108,7 @@ class Handler(remote: InetSocketAddress, connection: ActorRef, responder:ActorRe
       context.parent ! Reconnect
     case Stop =>
       val reply = sender()
-      connection ! Write(out(Quit("End is coming...").byteString))
+      connection ! Write(out(Quit(quitMsg).byteString))
       throttler ! SetTarget(None)
       context.setReceiveTimeout(20 seconds)
       context.children.foreach(context.unwatch)
